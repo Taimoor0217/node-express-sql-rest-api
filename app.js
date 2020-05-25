@@ -7,7 +7,7 @@ function testdb(db){
   db
     .authenticate()
     .then(() => {
-      console.log('Connection has been established successfully.');
+      console.log('Connection to database, established successfully.');
     })
     .catch(err => {
       console.error('Unable to connect to the database:', err);
@@ -37,17 +37,25 @@ app.use(morgan('dev'));
 
 // setup a friendly greeting for the root route
 
-// user
-// .findAll()
-// .then(d=> console.log(d))
-// .catch(d=>console.log(d))
 
-course
-.findAll()
-.then( (d) => console.log(d[0]))
-.catch(d=>console.log(d))
+// setup a global error handler
+app.use((err, req, res, next) => {
+  if (enableGlobalErrorLogging) {
+    console.error(`Global error handler: ${JSON.stringify(err.stack)}`);
+  }
+  
+  res.status(err.status || 500).json({
+    message: err.message,
+    error: {},
+  });
+});
 
+//configure routes
+let userRoutes  = require('./routes/user');
+let courseRoutes  = require('./routes/course');
 
+app.use('/api/users' , userRoutes);
+app.use('/api/courses' , courseRoutes);
 app.get('/', (req, res) => {
   res.json({
     message: 'Welcome to the REST API project!',
@@ -58,18 +66,6 @@ app.get('/', (req, res) => {
 app.use((req, res) => {
   res.status(404).json({
     message: 'Route Not Found',
-  });
-});
-
-// setup a global error handler
-app.use((err, req, res, next) => {
-  if (enableGlobalErrorLogging) {
-    console.error(`Global error handler: ${JSON.stringify(err.stack)}`);
-  }
-
-  res.status(err.status || 500).json({
-    message: err.message,
-    error: {},
   });
 });
 
