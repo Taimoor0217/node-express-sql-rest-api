@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
+const auth = require('basic-auth');
 const saltRounds = 10;
 
 // Bring in User Model
@@ -39,9 +40,35 @@ function createUser(data , res){
 
 }
 
+function authenticateUser(data){
+    return new Promise((resolve , reject)=>{
+        User
+        .findAll({
+            raw: true,
+            where: {
+                emailAddress: data.emailAddress
+            }
+        })
+        .then(user =>{
+            user = user[0]
+            console.log("User :",  user)
+            bcrypt
+            .compare(data.password , user.password)
+            .then((decision)=> {
+                console.log(decision)
+                decision ? resolve(decision): reject(decision)
+            })
+            .catch((err)=>reject(false))
+        })
+        .catch(err=>{
+            console.log(err)
+            reject(false)
+        })
+    })
+}
 
 // Get all users
-router.get('/', function(req, res){
+router.get('/ping', function(req, res){
     User
     .findAll({
         raw: true,
@@ -53,6 +80,27 @@ router.get('/', function(req, res){
         res.status(200).send(users)
     })
     .catch(d =>console.log(d))
+});
+
+
+// Return currently authenticated user
+router.get('/', function(req, res){
+    // console.log(auth(req))
+    data = auth(req)
+    User
+    .findAll({
+        raw: true,
+        attributes: {
+            exclude: ['createdAt' , 'updatedAt' , 'id']
+        },
+        where: {
+            emailAddress: data.name            
+        }
+    })
+    .then((user)=>{
+        res.status(200).send(user[0])
+    })
+    // .catch(d =>console.log(d))
 });
 
 // Create User
@@ -81,6 +129,27 @@ router.post('/' , function(req , res){
         })
     }
         
+})
+
+// User Login
+router.post('/login' , function(req , res){
+    const data = req.body
+    // console.log(data)
+    if(!data.emailAddress || !data.password){
+        res.status(400).json({message: "email or password cannot be empty"})
+        res.end()
+    }else{
+        authenticateUser(data)
+        .then(()=>{
+            res.status(200)
+            res.end()
+        })
+        .catch(()=>{
+            res.status(403).json({
+                message: "Invalid credentials"
+            })
+        })
+    }
 })
 
 module.exports = router;
