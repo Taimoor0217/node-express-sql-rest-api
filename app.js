@@ -20,14 +20,17 @@ function testdb(db){
 const express = require('express');
 const morgan = require('morgan');
 const db = require('./dbConfig');
-const user = require('./models/user')
-const course = require('./models/course')
+const bodyParser = require('body-parser');
 // variable to enable global error logging
 const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'true';
 
 // create the Express app
 const app = express();
 
+
+app.use(bodyParser.urlencoded({ extended: false }));
+// parse application/json
+app.use(bodyParser.json());
 
 testdb(db)
 // setup morgan which gives us http request logging
