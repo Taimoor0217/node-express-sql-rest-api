@@ -67,5 +67,31 @@ router.get('/:id', function(req, res){
         console.log(err)
     })
 });
+router.post('/' , function(req , res){
+    //authorization to be added
+    data = req.body
+    if(!data.title || !data.description){
+        res.status(400).json({
+            message: "Course title or description cannot be empty"
+        })
+    }else{
+        Course
+        .create(data)
+        .then(d =>{
+            console.log("Course created sucessfully: ", d)
+            res.status(201).location('/')
+            res.end()
+        })
+        .catch(err=>{
+            console.log(err)
+            res.status(500).json({
+                message: "Could not create the course with given attributes."
+            })
+        })
+
+    }
+})
+
+
 
 module.exports = router;
