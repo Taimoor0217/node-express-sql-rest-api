@@ -70,6 +70,7 @@ router.get('/:id', function(req, res){
 });
 router.post('/' , function(req , res){
     //authorization to be added
+    //add the user to be the current user
     data = req.body
     if(!data.title || !data.description){
         res.status(400).json({
@@ -111,6 +112,34 @@ router.delete('/:id' , function(req , res){
             message: "Could not delete the course"
         })
     })
+})
+
+router.put('/:id' , function(req , res){
+    // console.log("PUT", req.body)
+    //add atuthetication , check attributes
+    const data = req.body
+    if(!data.title || !data.description){
+        res.status(400).json({
+            message: "Course title or description cannot be empty"
+        })
+    }else{
+        Course
+        .update(req.body , {
+            where: {
+                id: req.params.id
+            }
+        })
+        .then((data)=>{
+            console.log("COUSRE UPDATE SUCCESSFULLY ", data)
+            res.status(204).end()
+        })
+        .catch(err=>{
+            res.status(400).json({
+                message: "Course could not be updated"
+            })
+        })
+    }
+
 })
 
 module.exports = router;
