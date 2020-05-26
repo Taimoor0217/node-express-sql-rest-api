@@ -3,7 +3,8 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const auth = require('basic-auth');
 const saltRounds = 10;
-
+const Authorize = require('../helpers/auth').Authorize
+const authenticateUser = require('../helpers/auth').authenticateUser
 // Bring in User Model
 let User = require('../models/user');
 
@@ -40,32 +41,6 @@ function createUser(data , res){
 
 }
 
-function authenticateUser(data){
-    return new Promise((resolve , reject)=>{
-        User
-        .findAll({
-            raw: true,
-            where: {
-                emailAddress: data.emailAddress
-            }
-        })
-        .then(user =>{
-            user = user[0]
-            console.log("User :",  user)
-            bcrypt
-            .compare(data.password , user.password)
-            .then((decision)=> {
-                console.log(decision)
-                decision ? resolve(user): reject(decision)
-            })
-            .catch((err)=>reject(false))
-        })
-        .catch(err=>{
-            console.log(err)
-            reject(false)
-        })
-    })
-}
 
 // Get all users
 router.get('/ping', function(req, res){
@@ -84,14 +59,14 @@ router.get('/ping', function(req, res){
 
 
 // Return currently authenticated user
-router.get('/', function(req, res){
+router.get('/', Authorize , function(req, res){
     // console.log(auth(req))
     data = auth(req)
     User
     .findAll({
         raw: true,
         attributes: {
-            exclude: ['createdAt' , 'updatedAt' , 'id']
+            exclude: ['createdAt' , 'updatedAt' , 'id' , 'password']
         },
         where: {
             emailAddress: data.name            
