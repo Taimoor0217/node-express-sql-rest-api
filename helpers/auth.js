@@ -32,7 +32,13 @@ function authenticateUser(data){
 function Authorize(req , res , next){
     // console.log("Autrhorized Called")
     data = auth(req)
-    if(!data.name | !data.pass ){
+    // console.log()
+    if(typeof(data) == "undefined"){
+        console.log("rejecting unatuhorized request")
+        res.status(401).json({
+            message: "Could not authorize the request"
+        })
+    }else if( !data.name | !data.pass ){
         console.log("rejecting unatuhorized request")
         res.status(401).json({
             message: "Could not authorize the request"
