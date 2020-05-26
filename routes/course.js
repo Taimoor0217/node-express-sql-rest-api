@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
-
+const Authorize = require('../helpers/auth').Authorize
 // Bring in Models
 let Course = require('../models/course');
 let User = require('../models/user');
@@ -68,7 +68,7 @@ router.get('/:id', function(req, res){
         console.log(err)
     })
 });
-router.post('/' , function(req , res){
+router.post('/' ,Authorize,  function(req , res){
     //authorization to be added
     //add the user to be the current user
     data = req.body
@@ -94,7 +94,7 @@ router.post('/' , function(req , res){
     }
 })
 
-router.delete('/:id' , function(req , res){
+router.delete('/:id' , Authorize , function(req , res){
     //authorization to be added
     Course
     .destroy({
@@ -114,7 +114,7 @@ router.delete('/:id' , function(req , res){
     })
 })
 
-router.put('/:id' , function(req , res){
+router.put('/:id' ,Authorize , function(req , res){
     // console.log("PUT", req.body)
     //add atuthetication , check attributes
     const data = req.body
