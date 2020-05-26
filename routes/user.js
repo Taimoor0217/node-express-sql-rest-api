@@ -56,7 +56,7 @@ function authenticateUser(data){
             .compare(data.password , user.password)
             .then((decision)=> {
                 console.log(decision)
-                decision ? resolve(decision): reject(decision)
+                decision ? resolve(user): reject(decision)
             })
             .catch((err)=>reject(false))
         })
@@ -140,8 +140,9 @@ router.post('/login' , function(req , res){
         res.end()
     }else{
         authenticateUser(data)
-        .then(()=>{
-            res.status(200)
+        .then((user)=>{
+            delete user.password
+            res.status(200).json(user)
             res.end()
         })
         .catch(()=>{
