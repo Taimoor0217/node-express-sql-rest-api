@@ -33,6 +33,7 @@ router.get('/', function(req, res){
     })
 });
 
+
 router.get('/:id', function(req, res){
     Course
     .findAll({
@@ -92,6 +93,24 @@ router.post('/' , function(req , res){
     }
 })
 
-
+router.delete('/:id' , function(req , res){
+    //authorization to be added
+    Course
+    .destroy({
+        where:{
+            id: req.params.id
+        }
+    })
+    .then(()=>{
+        console.log("Course sucessfully deleted")
+        res.status(204).end()
+    })
+    .catch((err)=>{
+        console.log(err)
+        res.status(400).send({
+            message: "Could not delete the course"
+        })
+    })
+})
 
 module.exports = router;
