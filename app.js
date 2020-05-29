@@ -22,12 +22,13 @@ const morgan = require('morgan');
 const db = require('./dbConfig');
 const bodyParser = require('body-parser');
 // variable to enable global error logging
+const cors = require('cors')
 const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'true';
 
 // create the Express app
 const app = express();
 
-
+app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
