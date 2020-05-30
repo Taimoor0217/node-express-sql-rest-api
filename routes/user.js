@@ -109,7 +109,7 @@ router.post('/' , function(req , res){
 // User Login
 router.post('/login' , function(req , res){
     const data = req.body
-    // console.log(data)
+    console.log(data)
     if(!data.emailAddress || !data.password){
         res.status(400).json({message: "email or password cannot be empty"})
         res.end()

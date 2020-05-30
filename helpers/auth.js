@@ -12,15 +12,20 @@ function authenticateUser(data){
             }
         })
         .then(user =>{
-            user = user[0]
-            console.log("User :",  user)
-            bcrypt
-            .compare(data.password , user.password)
-            .then((decision)=> {
-                console.log(decision)
-                decision ? resolve(user): reject(decision)
-            })
-            .catch((err)=>reject(false))
+            // console.log("JERERERE" , user)
+            if(user.length > 0){
+                user = user[0]
+                console.log("User :",  user)
+                bcrypt
+                .compare(data.password , user.password)
+                .then((decision)=> {
+                    console.log(decision)
+                    decision ? resolve(user): reject(decision)
+                })
+                .catch((err)=>reject(false))
+            }else{
+                reject(false)
+            }
         })
         .catch(err=>{
             console.log(err)
